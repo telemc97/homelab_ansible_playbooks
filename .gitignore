@@ -1,0 +1,5 @@
+.venv
+.ansible
+.vscode
+
+**/secrets.yaml

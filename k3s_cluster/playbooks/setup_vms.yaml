@@ -1,0 +1,55 @@
+- name: Setup vms and Install k3s etc
+  hosts: cluster
+  gather_facts: false
+  vars_files:
+    - ../vars/create_template_vars.yaml
+    - ../vars/create_cluster_vars.yaml
+  tasks:
+
+    - name: Include vault secrets
+      ansible.builtin.include_vars:
+        file: '../vars/secrets.yaml'
+      no_log: true
+
+    - name: Download K3s install script
+      ansible.builtin.uri:
+        url: https://get.k3s.io
+        return_content: true
+      register: k3s_install_script
+      delegate_to: node_0
+
+    - name: Run the K3s install script
+      ansible.builtin.shell: /bin/bash -s
+      args:
+        stdin: "{{ k3s_install_script.content }}"
+        executable: /bin/bash
+      register: install_server_node
+      delegate_to: node_0
+      failed_when: install_server_node.rc != 0
+
+    - name: Wait for server token to be created
+      ansible.builtin.wait_for:
+        path: /var/lib/rancher/k3s/server/node-token
+        state: present
+        timeout: 60
+      become: true
+      delegate_to: node_0
+
+    - name: Read k3s server token
+      ansible.builtin.slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: k3s_token_raw
+      become: true
+      no_log: true
+      delegate_to: node_0
+
+    - name: Run the K3s install script as an agent
+      ansible.builtin.shell: |
+        K3S_URL=https://{{ vm_data[0].ip }}:6443 K3S_TOKEN={{ k3s_token_raw.content | b64decode | trim }} sh -
+      args:
+        stdin: "{{ k3s_install_script.content }}"
+        executable: /bin/sh
+      register: install_agent_node
+      when: inventory_hostname != "node_0"
+      failed_when: install_agent_node.rc != 0
+      delegate_to: "{{ inventory_hostname }}"

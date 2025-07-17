@@ -1,0 +1,8 @@
+# Cloud image settings
+cloud_image_url: "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+cloud_image_storage: "/var/lib/vz/template/iso"
+cloud_image_name: "noble-server-cloudimg-amd64.img"
+
+user_data_file: "user-data.yaml.j2"
+user_data_file_storage: "local"
+snippets_storage: "/var/lib/vz/snippets"

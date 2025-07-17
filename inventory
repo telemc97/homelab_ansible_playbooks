@@ -1,0 +1,6 @@
+[proxmox]
+proxmox_server ansible_host=192.168.1.3 ansible_user=root
+
+[cluster]
+node_0 ansible_host=192.168.1.190 ansible_user=telemc
+node_1 ansible_host=192.168.1.191 ansible_user=telemc

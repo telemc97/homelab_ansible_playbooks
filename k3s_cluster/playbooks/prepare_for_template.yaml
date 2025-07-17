@@ -1,0 +1,29 @@
+- name: Creating The k3s Template in Proxmox
+  hosts: proxmox_server
+  gather_facts: false
+  vars_files:
+    - ../vars/template_vars.yaml
+  tasks:
+
+    - name: Include vault secrets
+      ansible.builtin.include_vars:
+        file: '../vars/secrets.yaml'
+      no_log: true
+
+    - name: Download the cloud image
+      ansible.builtin.get_url:
+        url: "{{ cloud_image_url }}"
+        dest: "{{ cloud_image_storage }}/{{ cloud_image_name }}"
+        owner: root
+        group: root
+        mode: '0644'
+        timeout: 60
+
+    - name: Copy user-data to Proxmox node
+      ansible.builtin.template:
+        src: "../files/{{ user_data_file }}"
+        remote_src: false
+        dest: "{{ snippets_storage }}/user-data.yaml"
+        owner: root
+        group: root
+        mode: '0644'
