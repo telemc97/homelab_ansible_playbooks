@@ -1,9 +1,9 @@
 - name: Setup vms and Install k3s etc
   hosts: cluster
   gather_facts: false
-  vars_files:
-    - ../vars/create_template_vars.yaml
-    - ../vars/create_cluster_vars.yaml
+  # vars_files:
+  #   - ../vars/create_template_vars.yaml
+  #   - ../vars/create_cluster_vars.yaml
   tasks:
 
     - name: Include vault secrets
