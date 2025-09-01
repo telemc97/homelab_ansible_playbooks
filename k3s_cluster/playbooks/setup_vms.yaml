@@ -5,12 +5,7 @@
   #   - ../vars/create_template_vars.yaml
   #   - ../vars/create_cluster_vars.yaml
   tasks:
-
-    - name: Include vault secrets
-      ansible.builtin.include_vars:
-        file: '../vars/secrets.yaml'
-      no_log: true
-
+  
     - name: Download K3s install script
       ansible.builtin.uri:
         url: https://get.k3s.io
